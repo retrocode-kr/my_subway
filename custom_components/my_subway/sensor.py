@@ -25,7 +25,8 @@ class SubwaySensor(Entity):
         return self._state
 
     def update(self):
-        url = f"http://swopenapi.seoul.go.kr/api/subway/744357696c7073793739527250724d/json/realtimeStationArrival/1/4/%EB%B6%80%EA%B0%9C/"
+        #url = f"http://swopenapi.seoul.go.kr/api/subway/744357696c7073793739527250724d/json/realtimeStationArrival/1/4/%EB%B6%80%EA%B0%9C/"
+        url = f"http://swopenapi.seoul.go.kr/api/subway/{self._api_key}/json/realtimeStationArrival/1/4/{self._station}"
         try:
             response = requests.get(url, timeout=10)
             data = response.json()
