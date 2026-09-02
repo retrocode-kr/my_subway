@@ -28,11 +28,10 @@ class SubwaySensor(Entity):
 
     @property
     def extra_state_attributes(self):
-        """test_run.py에서 attrs로 출력했던 딕셔너리를 HA 속성으로 반환"""
         return self._extra_attributes
 
     async def async_update(self):
-        url = f"http://swopenAPI.seoul.go.kr/api/subway/{self._api_key}/json/realtimeStationArrival/1/4/{self._station}"
+        url = f"http://swopenAPI.seoul.go.kr/api/subway/{self._api_key}/json/realtimeStationArrival/0/10/{self._station}"
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, timeout=10) as response:
@@ -40,26 +39,31 @@ class SubwaySensor(Entity):
                         data = await response.json()
                         arrivals = data.get("realtimeArrivalList", [])
                         
-                        # test_run.py와 동일한 파싱 로직
-                        up_trains = [t for t in arrivals if t.get("updnLine") == "상행"]
-                        
                         attrs = {}
                         if arrivals:
                             attrs["realtimeArrivalList"] = arrivals
                             
-                        if up_trains:
-                            self._state = up_trains[0].get("arvlMsg2", "정보 없음")
-                            attrs["up_1st_line"] = up_trains[0].get("trainLineNm", "")
-                            attrs["up_1st_msg"] = up_trains[0].get("arvlMsg2", "")
+                            # '상행' 이면서 btrainSttus가 '일반'인 열차만 필터링
+                            up_trains = [
+                                t for t in arrivals 
+                                if t.get("updnLine") == "상행" and t.get("btrainSttus") == "일반"
+                            ]
                             
-                            if len(up_trains) > 1:
-                                attrs["up_2nd_line"] = up_trains[1].get("trainLineNm", "")
-                                attrs["up_2nd_msg"] = up_trains[1].get("arvlMsg2", "")
+                            if up_trains:
+                                self._state = up_trains[0].get("arvlMsg2", "정보 없음")
+                                attrs["up_1st_line"] = up_trains[0].get("trainLineNm", "")
+                                attrs["up_1st_msg"] = up_trains[0].get("arvlMsg2", "")
+                                
+                                if len(up_trains) > 1:
+                                    attrs["up_2nd_line"] = up_trains[1].get("trainLineNm", "")
+                                    attrs["up_2nd_msg"] = up_trains[1].get("arvlMsg2", "")
+                                else:
+                                    attrs["up_2nd_line"] = ""
+                                    attrs["up_2nd_msg"] = "다음 열차 없음"
                             else:
-                                attrs["up_2nd_line"] = ""
-                                attrs["up_2nd_msg"] = "다음 열차 없음"
+                                self._state = "상행 일반 열차 없음"
                         else:
-                            self._state = "상행 열차 없음"
+                            self._state = "운행 정보 없음"
                             
                         self._extra_attributes = attrs
                     else:
