@@ -32,7 +32,7 @@ class SubwaySensor(Entity):
         return self._extra_attributes
 
     async def async_update(self):
-        url = f"http://swopenAPI.seoul.go.kr/api/subway/{self._api_key}/json/realtimeStationArrival/0/10/{self._station}"
+        url = f"http://swopenAPI.seoul.go.kr/api/subway/{self._api_key}/json/realtimeStationArrival/1/4/{self._station}"
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, timeout=10) as response:
