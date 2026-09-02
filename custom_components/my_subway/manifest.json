@@ -1,9 +1,10 @@
 {
   "domain": "my_subway",
   "name": "My Subway Arrival",
-  "codeowners": ["retrocode-kr"],
+  "codeowners": ["@retrocode-kr"],
   "config_flow": false,
   "documentation": "https://github.com/retrocode-kr/my_subway",
+  "requirements": ["requests"],
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/retrocode-kr/my_subway/issues",
   "version": "1.0.0"
