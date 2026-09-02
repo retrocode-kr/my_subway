@@ -57,11 +57,9 @@ class SubwaySensor(Entity):
                                 if len(up_trains) > 1:
                                     attrs["up_2nd_line"] = up_trains[1].get("trainLineNm", "")
                                     attrs["up_2nd_msg"] = up_trains[1].get("arvlMsg2", "")
-
                                 else:
                                     attrs["up_2nd_line"] = ""
                                     attrs["up_2nd_msg"] = "다음 열차 없음"
-
                             else:
                                 self._state = "상행 일반 열차 없음"
                         else:
