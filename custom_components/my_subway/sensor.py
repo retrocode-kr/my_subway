@@ -7,7 +7,7 @@ SCAN_INTERVAL = timedelta(seconds=60) # 60초마다 API 호출
 def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the subway sensor platform."""
     api_key = config.get("api_key")
-    station = config.get("station", "부평")
+    station = config.get("station", "부개")
     add_entities([SubwaySensor(api_key, station)], True)
 
 class SubwaySensor(Entity):
