@@ -31,7 +31,7 @@ class SubwaySensor(Entity):
         return self._extra_attributes
 
     async def async_update(self):
-        url = f"http://swopenAPI.seoul.go.kr/api/subway/{self._api_key}/json/realtimeStationArrival/1/4{self._station}"
+        url = f"http://swopenAPI.seoul.go.kr/api/subway/{self._api_key}/json/realtimeStationArrival/1/4/{self._station}"
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, timeout=10) as response:
@@ -53,13 +53,16 @@ class SubwaySensor(Entity):
                                 self._state = up_trains[0].get("arvlMsg2", "정보 없음")
                                 attrs["up_1st_line"] = up_trains[0].get("trainLineNm", "")
                                 attrs["up_1st_msg"] = up_trains[0].get("arvlMsg2", "")
+                                attrs["up_1st_sec"] = self._safe_int(up_trains[0].get("barvlDt"))
                                 
                                 if len(up_trains) > 1:
                                     attrs["up_2nd_line"] = up_trains[1].get("trainLineNm", "")
                                     attrs["up_2nd_msg"] = up_trains[1].get("arvlMsg2", "")
+                                    attrs["up_2nd_sec"] = self._safe_int(up_trains[1].get("barvlDt"))
                                 else:
                                     attrs["up_2nd_line"] = ""
                                     attrs["up_2nd_msg"] = "다음 열차 없음"
+                                    attrs["up_2nd_sec"] = 0
                             else:
                                 self._state = "상행 일반 열차 없음"
                         else:
